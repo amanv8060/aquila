@@ -3,22 +3,20 @@ package utils
 import (
 	directive "aquila/models"
 	"bufio"
+	"fmt"
 	mapset "github.com/deckarep/golang-set/v2"
 	"github.com/rs/zerolog/log"
-
+	"gopkg.in/yaml.v2"
 	"os"
 	"path/filepath"
 )
-
-type AQSnippet struct {
-	Key   string
-	Value []string
-}
 
 var entireFile = ""
 
 var openRegions = mapset.NewSet[string]()
 var regions = make(map[string][]string)
+
+var path = "./code_regions/"
 
 func ReadFile() {
 	ex, err := os.Executable()
@@ -42,8 +40,25 @@ func ReadFile() {
 		log.Fatal().Msgf("scan file error: %v", err)
 		return
 	}
+	saveToYamlFile()
+}
 
-	print()
+func saveToYamlFile() {
+	err := os.MkdirAll(filepath.Dir(path), os.ModePerm)
+	if err != nil {
+		log.Fatal().Msg("Failed to create directories")
+		return
+	}
+
+	data, err := yaml.Marshal(&regions)
+	if err != nil {
+		log.Fatal().Msg("Error yaml couldn't be parsed")
+	}
+	err2 := os.WriteFile(path+"/users.yaml", data, os.ModePerm)
+	if err2 != nil {
+		log.Fatal().Msg("Couldn't create file")
+	}
+	fmt.Println("data written")
 }
 
 func processLine(line string) {

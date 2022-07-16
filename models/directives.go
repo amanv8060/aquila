@@ -5,7 +5,7 @@ import (
 	"strings"
 )
 
-var directiveRegex = "^(#(aqstart|aqend))"
+var directiveRegex = "^(\\s*)(\\S.*?)?#(?P<DirectiveType>aqstart|aqend)\\b\\s*(?P<args>.*?)(?:\\s*(?:-->|\\*\\/))?\\s*$"
 
 type Directive struct {
 	Regions []string
@@ -23,17 +23,16 @@ const (
 var reg = regexp.MustCompile(directiveRegex)
 
 func GetDirective(line string) *Directive {
-	if reg.MatchString(line) {
-		var _line = reg.ReplaceAllString(line, "")
-		_line = strings.TrimSpace(_line)
+	match := reg.FindStringSubmatch(line)
+	if match != nil {
 		var kind DirectiveType
-		if reg.FindString(line) == "#aqstart" {
+		if match[3] == "aqstart" {
 			kind = StartDirective
 		} else {
 			kind = EndDirective
 		}
 		return &Directive{
-			Regions: strings.Split(_line, ","),
+			Regions: strings.Split(match[4], ","),
 			Kind:    kind,
 		}
 	} else {
