@@ -12,13 +12,27 @@ import (
 	"github.com/spf13/viper"
 )
 
+const (
+	rootCommandHeader = `
+
+░█████╗░░██████╗░██╗░░░██╗██╗██╗░░░░░░█████╗░
+██╔══██╗██╔═══██╗██║░░░██║██║██║░░░░░██╔══██╗
+███████║██║██╗██║██║░░░██║██║██║░░░░░███████║
+██╔══██║╚██████╔╝██║░░░██║██║██║░░░░░██╔══██║
+██║░░██║░╚═██╔═╝░╚██████╔╝██║███████╗██║░░██║
+╚═╝░░╚═╝░░░╚═╝░░░░╚═════╝░╚═╝╚══════╝╚═╝░░╚═╝
+
+Manage docs seamlessly.
+`
+)
+
 var cfgFile string
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "aquila",
 	Short: "A brief description of your application",
-	Long:  `Long Desc`,
+	Long:  rootCommandHeader,
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
@@ -39,9 +53,6 @@ func init() {
 
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.aquila.yaml)")
 
-	// Cobra also supports local flags, which will only run
-	// when this action is called directly.
-	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
 
 // initConfig reads in config file and ENV variables if set.
