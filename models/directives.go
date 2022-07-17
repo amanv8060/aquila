@@ -5,6 +5,8 @@ import (
 	"strings"
 )
 
+var BlankLine = "^\\s*$"
+var LeadingWhiteSpace = "^[ \\t]*"
 var directiveRegex = "^(\\s*)(\\S.*?)?#(?P<DirectiveType>aqstart|aqend)\\b\\s*(?P<args>.*?)(?:\\s*(?:-->|\\*\\/))?\\s*$"
 
 type Directive struct {
@@ -31,8 +33,12 @@ func GetDirective(line string) *Directive {
 		} else {
 			kind = EndDirective
 		}
+		args := strings.Split(match[4], ",")
+		for i, arg := range args {
+			args[i] = strings.TrimSpace(arg)
+		}
 		return &Directive{
-			Regions: strings.Split(match[4], ","),
+			Regions: args,
 			Kind:    kind,
 		}
 	} else {

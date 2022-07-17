@@ -9,6 +9,7 @@ import (
 	"gopkg.in/yaml.v2"
 	"os"
 	"path/filepath"
+	"regexp"
 )
 
 var entireFile = ""
@@ -40,9 +41,39 @@ func ReadFile() {
 		log.Fatal().Msgf("scan file error: %v", err)
 		return
 	}
+	// iterate over regions and update them
+	for region, lines := range regions {
+		//call function to update regions[region]
+		regions[region] = *removeTrailingLines(&lines)
+		regions[region] = *removeTrailingPlaster(&lines)
+	}
+
 	saveToYamlFile()
 }
 
+func removeTrailingPlaster(lines *[]string) *[]string {
+	// remove last element if it matches ...
+	if len(*lines) > 0 {
+		if (*lines)[len(*lines)-1] == "..." {
+			*lines = (*lines)[:len(*lines)-1]
+		}
+	}
+	return lines
+}
+
+func removeTrailingLines(lines *[]string) *[]string {
+
+	// remove all blank lines from end in lines
+	for i := len(*lines) - 1; i >= 0; i-- {
+		blank, err := regexp.MatchString(directive.BlankLine, (*lines)[i])
+		if err == nil && blank {
+			*lines = (*lines)[:i]
+		} else {
+			break
+		}
+	}
+	return lines
+}
 func saveToYamlFile() {
 	err := os.MkdirAll(filepath.Dir(path), os.ModePerm)
 	if err != nil {
@@ -105,6 +136,7 @@ func regionEnd(directive directive.Directive) {
 	for _, region := range _regions {
 		if openRegions.Contains(region) {
 			regions[region] = append(regions[region], "...")
+			openRegions.Remove(region)
 		} else {
 			log.Debug().Msg(region + "doesn't have a start")
 		}
