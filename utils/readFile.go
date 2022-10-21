@@ -36,7 +36,13 @@ func ReadFile() {
 		log.Fatal().Msgf("open file error: %v", err)
 		return
 	}
-	defer f.Close()
+
+	defer func(f *os.File) {
+		err := f.Close()
+		if err != nil {
+			log.Fatal().Msgf("close file error: %v", err)
+		}
+	}(f)
 
 	sc := bufio.NewScanner(f)
 	for sc.Scan() {
@@ -52,6 +58,7 @@ func ReadFile() {
 		//call function to update regions[region]
 		regions[region] = *removeTrailingLines(&lines)
 		regions[region] = *removeTrailingPlaster(&lines)
+		regions[region] = *removeTrailingLines(&lines)
 	}
 
 	saveToYamlFile()
@@ -91,7 +98,7 @@ func saveToYamlFile() {
 	if err != nil {
 		log.Fatal().Msg("Error yaml couldn't be parsed")
 	}
-	err2 := os.WriteFile(path+"/users.yaml", data, os.ModePerm)
+	err2 := os.WriteFile(path+"/output.yaml", data, os.ModePerm)
 	if err2 != nil {
 		log.Fatal().Msg("Couldn't create file")
 	}
@@ -141,7 +148,10 @@ func regionEnd(directive directive.Directive) {
 
 	for _, region := range _regions {
 		if openRegions.Contains(region) {
-			regions[region] = append(regions[region], "...")
+			// remove trailing lines from regions[region] before adding plaster.
+			lines := regions[region]
+			regions[region] = *removeTrailingLines(&lines)
+			regions[region] = append(regions[region], "\t...")
 			openRegions.Remove(region)
 		} else {
 			log.Debug().Msg(region + "doesn't have a start")

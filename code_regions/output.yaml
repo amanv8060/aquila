@@ -1,8 +1,12 @@
 imports:
 - import "aquila/cmd"
-- ""
+- "\t..."
+- func main() {
+- "\tcmd.Execute()"
+- '}'
+- "\t..."
 main:
 - func main() {
 - "\tcmd.Execute()"
 - '}'
-- ""
+- "\t..."
