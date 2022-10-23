@@ -28,10 +28,10 @@ const (
 	EndDirective
 )
 
-var reg = regexp.MustCompile(directiveRegex)
+var directive = regexp.MustCompile(directiveRegex)
 
 func GetDirective(line string) *Directive {
-	match := reg.FindStringSubmatch(line)
+	match := directive.FindStringSubmatch(line)
 	if match != nil {
 		var kind DirectiveType
 		if match[3] == "aqstart" {
