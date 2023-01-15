@@ -9,10 +9,10 @@ package utils
 import (
 	directive "aquila/models"
 	"bufio"
+	"encoding/json"
 	"fmt"
 	mapset "github.com/deckarep/golang-set/v2"
 	"github.com/rs/zerolog/log"
-	"gopkg.in/yaml.v2"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -23,7 +23,7 @@ var entireFile = ""
 var openRegions = mapset.NewSet[string]()
 var regions = make(map[string][]string)
 
-var path = "./code_regions/"
+var ExcerptsPath = "./code_regions/"
 
 func ReadFile() {
 	ex, err := os.Executable()
@@ -47,7 +47,7 @@ func ReadFile() {
 	sc := bufio.NewScanner(f)
 	for sc.Scan() {
 		line := sc.Text()
-		processLine(line)
+		processReadLine(line)
 	}
 	if err := sc.Err(); err != nil {
 		log.Fatal().Msgf("scan file error: %v", err)
@@ -88,24 +88,24 @@ func removeTrailingLines(lines *[]string) *[]string {
 	return lines
 }
 func saveToYamlFile() {
-	err := os.MkdirAll(filepath.Dir(path), os.ModePerm)
+	err := os.MkdirAll(filepath.Dir(ExcerptsPath), os.ModePerm)
 	if err != nil {
 		log.Fatal().Msg("Failed to create directories")
 		return
 	}
 
-	data, err := yaml.Marshal(&regions)
+	data, err := json.Marshal(&regions)
 	if err != nil {
 		log.Fatal().Msg("Error yaml couldn't be parsed")
 	}
-	err2 := os.WriteFile(path+"/output.yaml", data, os.ModePerm)
+	err2 := os.WriteFile(ExcerptsPath+"/main.json", data, os.ModePerm)
 	if err2 != nil {
 		log.Fatal().Msg("Couldn't create file")
 	}
 	fmt.Println("data written")
 }
 
-func processLine(line string) {
+func processReadLine(line string) {
 	var _directive = directive.GetDirective(line)
 	if _directive == nil {
 		openRegions.Each(func(ele string) bool {
