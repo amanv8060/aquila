@@ -7,7 +7,7 @@ license that can be found in the LICENSE file.
 package cmd
 
 import (
-	"fmt"
+	"github.com/rs/zerolog/log"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -52,9 +52,7 @@ func init() {
 	// Here you will define your flags and configuration settings.
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
-
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.aquila.yaml)")
-
+	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is .aquila.yaml)")
 }
 
 // initConfig reads in config file and ENV variables if set.
@@ -63,20 +61,22 @@ func initConfig() {
 		// Use config file from the flag.
 		viper.SetConfigFile(cfgFile)
 	} else {
-		// Find home directory.
-		home, err := os.UserHomeDir()
-		cobra.CheckErr(err)
-
 		// Search config in home directory with name ".aquila" (without extension).
-		viper.AddConfigPath(home)
+		viper.AddConfigPath(".")
 		viper.SetConfigType("yaml")
-		viper.SetConfigName(".aquila")
+		viper.SetConfigName("aquila")
 	}
 
 	viper.AutomaticEnv() // read in environment variables that match
 
 	// If a config file is found, read it in.
 	if err := viper.ReadInConfig(); err == nil {
-		fmt.Fprintln(os.Stderr, "Using config file:", viper.ConfigFileUsed())
+		// log config file used
+		log.Info().Msgf("Using config file: %s", viper.ConfigFileUsed())
+		// set default path for the docs
+		viper.SetDefault("docs_path", "./docs/")
+	} else {
+		// throw error and exit
+		log.Fatal().Msgf("Error reading config file: %s", err)
 	}
 }

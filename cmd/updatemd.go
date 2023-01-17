@@ -9,12 +9,7 @@ import (
 var updateMdCmd = &cobra.Command{
 	Use:   "update-md",
 	Short: "Update Annotated Regions in your markdown with code regions",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Long:  `Updates the annotated regions in your markdown with the code regions.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		utils.UpdateRegions()
 	},

@@ -25,13 +25,8 @@ var regions = make(map[string][]string)
 
 var ExcerptsPath = "./code_regions/"
 
-func ReadFile() {
-	ex, err := os.Executable()
-	if err != nil {
-		panic(err)
-	}
-	exePath := filepath.Dir(ex)
-	f, err := os.OpenFile(exePath+"/main.go", os.O_RDONLY, os.ModePerm)
+func ReadFile(path string, codePath string) {
+	f, err := os.OpenFile(path, os.O_RDONLY, os.ModePerm)
 	if err != nil {
 		log.Fatal().Msgf("open file error: %v", err)
 		return
@@ -61,7 +56,9 @@ func ReadFile() {
 		regions[region] = *removeTrailingLines(&lines)
 	}
 
-	saveToYamlFile()
+	// get relative path of file
+	relPath, err := filepath.Rel(codePath, path)
+	saveToYamlFile(relPath)
 }
 
 func removeTrailingPlaster(lines *[]string) *[]string {
@@ -87,8 +84,15 @@ func removeTrailingLines(lines *[]string) *[]string {
 	}
 	return lines
 }
-func saveToYamlFile() {
-	err := os.MkdirAll(filepath.Dir(ExcerptsPath), os.ModePerm)
+func saveToYamlFile(path string) {
+	// return if regions are empty
+	if len(regions) == 0 {
+		return
+	}
+
+	// replace extension in path with .json
+	path = ExcerptsPath + "/" + path + ".json"
+	err := os.MkdirAll(filepath.Dir(path), os.ModePerm)
 	if err != nil {
 		log.Fatal().Msg("Failed to create directories")
 		return
@@ -98,10 +102,11 @@ func saveToYamlFile() {
 	if err != nil {
 		log.Fatal().Msg("Error yaml couldn't be parsed")
 	}
-	err2 := os.WriteFile(ExcerptsPath+"/main.json", data, os.ModePerm)
+	err2 := os.WriteFile(path, data, os.ModePerm)
 	if err2 != nil {
 		log.Fatal().Msg("Couldn't create file")
 	}
+	regions = make(map[string][]string)
 	fmt.Println("data written")
 }
 

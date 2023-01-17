@@ -5,13 +5,14 @@ import (
 	"bufio"
 	"encoding/json"
 	"github.com/rs/zerolog/log"
+	"github.com/spf13/viper"
 	"io"
 	"os"
 	"path/filepath"
 	"strings"
 )
 
-var docsPath = "./docs/"
+var docsPath = viper.GetString("docsPath")
 
 func UpdateRegions() {
 
