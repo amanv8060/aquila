@@ -17,6 +17,5 @@ Building from Source :
 ## Upcoming Features
 
 - Support Part of lines in code snippets.
-- Support for same file in different langauge.
 - Improved performance.
 
