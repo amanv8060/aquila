@@ -33,7 +33,7 @@ var cfgFile string
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "aquila",
-	Short: "A brief description of your application",
+	Short: "Aquila is a tool to manage your docs seamlessly.",
 	Long:  rootCommandHeader,
 }
 
