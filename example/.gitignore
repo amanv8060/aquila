@@ -1,2 +1,2 @@
 # Ignore Code Regions if you don't want to be source controlled.
-./code_regions/**
+code_regions/

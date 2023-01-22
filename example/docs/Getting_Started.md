@@ -14,8 +14,23 @@ Clone the repo and cd into the directory:
 ### How to say Hi
 
 <?code-region "main.js" region="sayHi"?>
+```js
+
+// Function to say hi.
+function sayHi() {
+    console.log("Hi!");
+}
+	...
+```
 
 ### How to add in js
 
 <?code-region "main.js" region="addition"?>
+```js
+
+function addition(a, b) {
+    return a + b;
+}
+	...
+```
 
