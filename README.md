@@ -4,9 +4,9 @@ Manage Docs Seamlessly. Aquila Helps you to manage testable code snippets in you
 
 ## Usage
 
-See Usage Instructions.
+See Usage Instructions [here](how_to_use.md), and also see the [example](example/).
 
-Building from Source :
+### Building from Source :
 
 ```bash
   git clone git@github.com:amanv8060/aquila.git
