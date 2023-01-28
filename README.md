@@ -1,6 +1,14 @@
 # Aquila
 
-Manage Docs Seamlessly. Aquila Helps you to manage testable code snippets in your docs.
+Manage Docs Seamlessly. Aquila helps you manage testable code snippets in your docs.
+
+
+## Features
+
+- Extract code regions from source files
+- Insert code snippets into documentation
+- Support for line-specific code selection
+- Automatic code region updating
 
 ## Usage
 
@@ -14,8 +22,8 @@ See Usage Instructions [here](how_to_use.md), and also see the [example](example
   go build
 ```
 
-## Upcoming Features
 
-- Support Part of lines in code snippets.
-- Improved performance.
+## License
+
+This project is licensed under the BSD License - see the [LICENSE](LICENSE) file for details.
 

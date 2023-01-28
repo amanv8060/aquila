@@ -130,57 +130,72 @@ func processFile(path string) {
 // function to read the lines, and update the newlines array, which is passed by reference.
 // returns a bool indicating whether the code region was inserted or not
 func processWriteLine(codeRegion *models.CodeRegion, updatedLines *[]string) bool {
-
 	// fetch code region from yaml file
-	splitPath := strings.Split(codeRegion.Path, ".")
-	_, extension := splitPath[0], splitPath[1]
-
+	// Get the file extension from the full path
+	extension := filepath.Ext(codeRegion.Path)[1:] // Remove the dot from extension
+	
 	jsonPath := ExcerptsPath + codeRegion.Path + ".json"
 
-	// read the yaml file
+	// read the json file
 	jsonFile, err := os.OpenFile(jsonPath, os.O_RDONLY, os.ModePerm)
 	if err != nil {
-		log.Fatal().Msgf("open file error: %v", err)
+		log.Debug().Msgf("open file error: %v", err) // Changed to Debug to not crash on missing files
 		return false
 	}
 
-	defer func(yamlFile *os.File) {
-		err := yamlFile.Close()
+	defer func(jsonFile *os.File) {
+		err := jsonFile.Close()
 		if err != nil {
 			log.Fatal().Msgf("close file error: %v", err)
 		}
 	}(jsonFile)
 
 	var regions = make(map[string][]string)
-
 	decoder := json.NewDecoder(jsonFile)
 
 	// read the json file
 	err = decoder.Decode(&regions)
 	if err != nil {
+		log.Debug().Msgf("json decode error: %v", err)
 		return false
 	}
 
 	// get the code region from the yaml file
-	codeRegionLines := regions[codeRegion.RegionName]
-
-	if err != nil {
-		log.Fatal().Msgf("write to file error: %v", err)
+	codeRegionLines, exists := regions[codeRegion.RegionName]
+	if !exists {
+		log.Debug().Msgf("region %s not found", codeRegion.RegionName)
 		return false
 	}
+
 	header := "```" + extension
 	footer := "```"
+
 	// if codeRegionLines are not empty or nil, insert the code region
-	if codeRegionLines != nil && len(codeRegionLines) > 0 {
-		// insert header
+	if len(codeRegionLines) > 0 {
 		*updatedLines = append(*updatedLines, header)
 
-		// insert code region lines
+		// Handle line range selection
+		if codeRegion.StartLine > 0 && codeRegion.EndLine > 0 {
+			start := codeRegion.StartLine - 1 // Convert to 0-based index
+			end := codeRegion.EndLine
+			
+			// Validate ranges
+			if start < 0 {
+				start = 0
+			}
+			if end > len(codeRegionLines) {
+				end = len(codeRegionLines)
+			}
+			if start < len(codeRegionLines) && start < end {
+				codeRegionLines = codeRegionLines[start:end]
+			} else {
+				log.Debug().Msgf("invalid line range %d-%d for region with %d lines", 
+					codeRegion.StartLine, codeRegion.EndLine, len(codeRegionLines))
+			}
+		}
+
 		*updatedLines = append(*updatedLines, codeRegionLines...)
-
-		// insert footer
 		*updatedLines = append(*updatedLines, footer)
-
 		return true
 	}
 	return false

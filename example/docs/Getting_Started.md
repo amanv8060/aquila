@@ -23,6 +23,21 @@ function sayHi() {
 	...
 ```
 
+### How to print Hi in js
+<?code-region "main.js" region="sayHi" lines="4"?>
+```js
+    console.log("Hi!");
+```
+
+### How to print Hi in js in function
+<?code-region "main.js" region="sayHi" lines="3-5"?>
+```js
+function sayHi() {
+    console.log("Hi!");
+}
+```
+
+
 ### How to add in js
 
 <?code-region "main.js" region="addition"?>
