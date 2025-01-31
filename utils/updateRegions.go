@@ -64,6 +64,10 @@ func processFile(path string) {
 	var updatedLines []string
 	// read the file line by line
 	lines, err := LinesFromReader(sc)
+	if err != nil {
+		log.Fatal().Msgf("read file error: %v", err)
+		return
+	}
 
 	// flag to check if the code region was inserted or not
 	var codeRegionInserted bool
@@ -121,6 +125,10 @@ func processFile(path string) {
 		// write the updated lines to the file
 		for _, line := range updatedLines {
 			_, err = f.WriteString(line + "\n")
+			if err != nil {
+				log.Fatal().Msgf("write file error: %v", err)
+				return
+			}
 		}
 	}
 
@@ -133,7 +141,7 @@ func processWriteLine(codeRegion *models.CodeRegion, updatedLines *[]string) boo
 	// fetch code region from yaml file
 	// Get the file extension from the full path
 	extension := filepath.Ext(codeRegion.Path)[1:] // Remove the dot from extension
-	
+
 	jsonPath := ExcerptsPath + codeRegion.Path + ".json"
 
 	// read the json file
@@ -178,7 +186,7 @@ func processWriteLine(codeRegion *models.CodeRegion, updatedLines *[]string) boo
 		if codeRegion.StartLine > 0 && codeRegion.EndLine > 0 {
 			start := codeRegion.StartLine - 1 // Convert to 0-based index
 			end := codeRegion.EndLine
-			
+
 			// Validate ranges
 			if start < 0 {
 				start = 0
@@ -189,7 +197,7 @@ func processWriteLine(codeRegion *models.CodeRegion, updatedLines *[]string) boo
 			if start < len(codeRegionLines) && start < end {
 				codeRegionLines = codeRegionLines[start:end]
 			} else {
-				log.Debug().Msgf("invalid line range %d-%d for region with %d lines", 
+				log.Debug().Msgf("invalid line range %d-%d for region with %d lines",
 					codeRegion.StartLine, codeRegion.EndLine, len(codeRegionLines))
 			}
 		}

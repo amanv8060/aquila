@@ -58,6 +58,10 @@ func ReadFile(path string, codePath string) {
 
 	// get relative path of file
 	relPath, err := filepath.Rel(codePath, path)
+	if err != nil {
+		log.Warn().Msg("Couldn't get relative path")
+		return
+	}
 	saveToYamlFile(relPath)
 }
 

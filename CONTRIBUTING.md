@@ -2,7 +2,7 @@
 
 ### Prerequisites
 
-- Go 1.16 or later
+- Go 1.22 or later
 - Make (optional, for using Makefile commands)
 - golangci-lint (optional, for linting)
 
